@@ -52,3 +52,5 @@ const typeDefs = gql`
     deleteSong(id: ID!): Boolean!
     }
   `
+
+  export default typeDefs

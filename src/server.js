@@ -2,8 +2,10 @@ import 'dotenv/config'
 import { ApolloServer } from '@apollo/server'
 import { startStandaloneServer } from '@apollo/server/standalone'
 import mongoose from 'mongoose'
-import typeDefs from './schema.js'
-import { getUser } from './auth.js'
+import typeDefs from './schema/typeDefs.js'
+import { getUser } from './middleware/auth.js'
+import resolvers from './resolvers/index.js'
+
 
 async function start() {
   await mongoose.connect(process.env.MONGODB_URI)
