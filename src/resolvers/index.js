@@ -18,7 +18,6 @@ const resolvers = {
         .skip((page - 1) * limit)
         .limit(limit)
     },
-
     song: async (__, { id }) => {
       const song = await Song.findById(id)
       if (!song) throw new Error("Song not found")
@@ -65,4 +64,41 @@ const resolvers = {
         return songs.map(s => ({ position: s.position, song: s}))
       },
   },
+
+  Mutation: {
+    register: async (__, { username, password }) => {
+      const existingUser = await User.findOne({ username })
+      if (existingUser) throw new Error("User already exists")
+      const user = new User({ username, password })
+      await user.save()
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" })
+      return { token, user }
+    },
+    login: async (__, { username, password }) => {
+      const user = await User.findOne({ username })
+      const isMatch = user ? await user.comparePassword(password) : false
+      if (!user || !isMatch) throw new Error("Invalid username or password")
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" })
+      return { token, user }
+    },
+    addSong: async (__, { title, artist, daysReleased, position, top10, peakPosition, peakPositionTimes, peakStreams, totalStreams }, { user }) => {
+      requireAuth(user)
+      const song = new Song({ title, artist, daysReleased, position, top10, peakPosition, peakPositionTimes, peakStreams, totalStreams })
+      return song.save()
+    },
+    updateSong: async (__, { id, ...updates}, { user }) => {
+      requireAuth(user)
+      const song = await Song.findByIdAndUpdate(id, updates, {new: true})
+      if (!song) throw new Error("Song not found")
+      return song
+    },
+      deleteSong: async (__, { id }, { user }) => {
+        requireAuth(user)
+        const song = await Song.findByIdAndDelete(id)
+        if (!song) throw new Error("Song not found")
+        return true
+      },
+  }
 }
+
+export default resolvers
