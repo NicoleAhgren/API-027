@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken"
+import { GraphQLError } from "graphql"
 
 export const getUser = (req) => {
   const authHeader = req.headers.authorization || ''
@@ -17,6 +18,6 @@ export const getUser = (req) => {
 
 export const requireAuth = (user) => {
   if (!user) {
-    throw new Error('Not authenticated')
+    throw new GraphQLError("Not authenticated", { extensions: { code: "UNAUTHENTICATED", http: { status: 401 } } })
   }
 }

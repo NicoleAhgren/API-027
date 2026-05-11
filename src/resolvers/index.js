@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken"
 import Song from "../models/Song.js"
 import User from "../models/User.js"
 import { requireAuth } from "../middleware/auth.js"
+import { GraphQLError } from "graphql"
 
 const resolvers = {
   Query: {
@@ -20,7 +21,7 @@ const resolvers = {
     },
     song: async (__, { id }) => {
       const song = await Song.findById(id)
-      if (!song) throw new Error("Song not found")
+      if (!song) throw new GraphQLError("Song not found", { extensions: { code: "NOT_FOUND", http: { status: 404 } } })
       return song
     },
 
@@ -54,7 +55,7 @@ const resolvers = {
             totalStreams: { $sum: "$totalStreams" },
          } }
       ])
-      if (!result.length) throw new Error('Artist not found')
+      if (!result.length) throw new GraphQLError("Artist not found", { extensions: { code: "NOT_FOUND", http: { status: 404 } } })
         const artistData = result[0]
         return { name: artistData._id, songs: artistData.songs, numberOfSongs: artistData.numberOfSongs, totalStreams: artistData.totalStreams}
       },
@@ -68,7 +69,7 @@ const resolvers = {
   Mutation: {
     register: async (__, { username, password }) => {
       const existingUser = await User.findOne({ username })
-      if (existingUser) throw new Error("User already exists")
+      if (existingUser) throw new GraphQLError("User already exists", { extensions: { code: "BAD_USER_INPUT", http: { status: 400 } } })
       const user = new User({ username, password })
       await user.save()
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" })
@@ -77,7 +78,7 @@ const resolvers = {
     login: async (__, { username, password }) => {
       const user = await User.findOne({ username })
       const isMatch = user ? await user.comparePassword(password) : false
-      if (!user || !isMatch) throw new Error("Invalid username or password")
+      if (!user || !isMatch) throw new GraphQLError("Invalid username or password", { extensions: { code: "UNAUTHENTICATED", http: { status: 401 } } })
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" })
       return { token, user }
     },
@@ -89,13 +90,13 @@ const resolvers = {
     updateSong: async (__, { id, ...updates}, { user }) => {
       requireAuth(user)
       const song = await Song.findByIdAndUpdate(id, updates, {new: true})
-      if (!song) throw new Error("Song not found")
+      if (!song) throw new GraphQLError("Song not found", { extensions: { code: "NOT_FOUND", http: { status: 404 } } })
       return song
     },
       deleteSong: async (__, { id }, { user }) => {
         requireAuth(user)
         const song = await Song.findByIdAndDelete(id)
-        if (!song) throw new Error("Song not found")
+        if (!song) throw new GraphQLError("Song not found", { extensions: { code: "NOT_FOUND", http: { status: 404 } } })
         return true
       },
   }
