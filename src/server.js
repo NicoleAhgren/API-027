@@ -11,7 +11,7 @@ async function start() {
   await mongoose.connect(process.env.MONGODB_URI)
   console.log('Connected to MongoDB')
 
-  const server = new ApolloServer({ typeDefs, resolvers })
+  const server = new ApolloServer({ typeDefs, resolvers, introspection: true })
 
   const { url } = await startStandaloneServer(server, {
     listen: { port: process.env.PORT || 2000 },
