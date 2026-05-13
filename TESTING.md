@@ -286,6 +286,7 @@ By following the **Testing Requirements** outlined above and adapting them to th
 
 Remember to:
 
+
 - **Customize Test Cases:** Tailor your test cases to reflect the unique aspects of GraphQL, such as handling queries and mutations within a single endpoint.
 - **Maintain Security:** Always handle sensitive data securely, especially when dealing with authentication tokens and user credentials.
 - **Ensure Independence:** Design tests to be independent and idempotent, allowing them to run reliably in any environment without side effects.
