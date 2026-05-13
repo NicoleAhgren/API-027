@@ -11,6 +11,15 @@
       "name": "Register user - success",
       "event": [
         {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.environment.set(\"randomUsername\", \"testuser_\" + Date.now());"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
           "listen": "test",
           "script": {
             "exec": [
@@ -47,14 +56,14 @@
         "body": {
           "mode": "graphql",
           "graphql": {
-            "query": "mutation {\r\n  register(username: \"duplicate_test_user\", password: \"Test1234!\") {\r\n    token\r\n    user {\r\n      id\r\n      username\r\n    }\r\n  }\r\n}",
+            "query": "mutation {\r\n  register(username: \"{{randomUsername}}\", password: \"Test1234!\") {\r\n    token\r\n    user {\r\n      id\r\n      username\r\n    }\r\n  }\r\n}",
             "variables": ""
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -90,14 +99,14 @@
         "body": {
           "mode": "graphql",
           "graphql": {
-            "query": "mutation {\r\n  register(username: \"duplicate_test_user\", password: \"Test1234!\") {\r\n    token\r\n    user {\r\n      id\r\n      username\r\n    }\r\n  }\r\n}\r\n",
+            "query": "mutation {\r\n  register(username: \"{{randomUsername}}\", password: \"Test1234!\") {\r\n    token\r\n    user {\r\n      id\r\n      username\r\n    }\r\n  }\r\n}\r\n",
             "variables": ""
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -137,14 +146,14 @@
         "body": {
           "mode": "graphql",
           "graphql": {
-            "query": "mutation {\r\n  login(username: \"duplicate_test_user\", password: \"Test1234!\") {\r\n    token\r\n    user {\r\n      id\r\n      username\r\n    }\r\n  }\r\n}",
+            "query": "mutation {\r\n  login(username: \"{{randomUsername}}\", password: \"Test1234!\") {\r\n    token\r\n    user {\r\n      id\r\n      username\r\n    }\r\n  }\r\n}",
             "variables": ""
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -180,14 +189,14 @@
         "body": {
           "mode": "graphql",
           "graphql": {
-            "query": "mutation {\r\n  login(username: \"duplicate_test_user\", password: \"wrongpassword\") {\r\n    token\r\n    user {\r\n      id\r\n      username\r\n    }\r\n  }\r\n}",
+            "query": "mutation {\r\n  login(username: \"{{randomUsername}}\", password: \"wrongpassword\") {\r\n    token\r\n    user {\r\n      id\r\n      username\r\n    }\r\n  }\r\n}",
             "variables": ""
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -240,9 +249,9 @@
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -282,9 +291,9 @@
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -324,9 +333,9 @@
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -378,9 +387,9 @@
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -421,9 +430,9 @@
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -470,9 +479,9 @@
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -513,9 +522,9 @@
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -556,9 +565,9 @@
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -604,9 +613,9 @@
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -653,9 +662,9 @@
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -708,9 +717,9 @@
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -756,9 +765,9 @@
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -799,9 +808,9 @@
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -848,9 +857,9 @@
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -898,9 +907,9 @@
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -942,9 +951,9 @@
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
@@ -989,9 +998,9 @@
           }
         },
         "url": {
-          "raw": "{{BaseUrl}}",
+          "raw": "{{baseUrl}}",
           "host": [
-            "{{BaseUrl}}"
+            "{{baseUrl}}"
           ]
         }
       },
