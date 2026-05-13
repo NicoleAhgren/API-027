@@ -1,29 +1,24 @@
-# API Design Assignment
+# Spotify Charts GraphQL API
 
 ## Project Name
 
-*Replace with the name of your API project.*
+Spotify Charts GraphQL API
 
 ## Objective
 
-Design and develop a robust, well-documented API (REST or GraphQL) that allows users to retrieve and manage information from a dataset of your choice. The API must include JWT authentication, automated testing via Postman/Newman in a CI/CD pipeline, and be publicly deployed.
-
-Choose a dataset (10000+ data points) that interests you — it should include at least one primary CRUD resource and two additional read-only resources. Sources like [Kaggle](https://www.kaggle.com/datasets), public APIs, or CSV files work well. Pick something you find interesting, as you will reuse this API in the next assignment (WT dashboard).
-
-*Describe your API in a few sentences: what dataset does it serve, what are its main resources, and what can users do with it?*
+A GraphQL API that serves the Spotify Top 10000 Streamed Songs dataset. Users can browse songs, artists, and the top chart, as well as create, update, and delete songs via authenticated mutations. The API uses JWT authentication for write operations and is publicly deployed on Render.
 
 ## Implementation Type
 
-*Specify: REST or GraphQL*
+GraphQL
 
 ## Links and Testing
 
 | | URL / File |
 |---|---|
-| **Production API** | *...* |
-| **API Documentation** | *...* |
-| **GraphQL Playground** (GraphQL only) | *...* |
-| **Postman Collection** | `*.postman_collection.json` |
+| **Production API** | https://api-027.onrender.com/ |
+| **GraphQL Playground** | https://api-027.onrender.com/ |
+| **Postman Collection** | `spotify-graphql-api.postman_collection.json` |
 | **Production Environment** | `production.postman_environment.json` |
 
 **Examiner can verify tests in one of the following ways:**
@@ -31,45 +26,63 @@ Choose a dataset (10000+ data points) that interests you — it should include a
 1. **CI/CD pipeline** — check the pipeline output in GitLab for test results.
 2. **Run manually** — no setup needed:
    ```
-   npx newman run <collection.json> -e production.postman_environment.json
+   npx newman run spotify-graphql-api.postman_collection.json -e production.postman_environment.json
    ```
 
 ## Dataset
 
-*Describe the dataset you chose:*
-
 | Field | Description |
 |---|---|
-| **Dataset source** | *e.g. Kaggle, public API, CSV, etc.* |
-| **Primary resource (CRUD)** | *e.g. Movies (id, title, release_year, genre, description)* |
-| **Secondary resource 1 (read-only)** | *e.g. Actors (id, name, movies_played)* |
-| **Secondary resource 2 (read-only)** | *e.g. Ratings (id, text, movie)* |
+| **Dataset source** | [Kaggle — Spotify Top 10000 Streamed Songs](https://www.kaggle.com/datasets/rakkesharv/spotify-top-10000-streamed-songs) |
+| **Format** | CSV (`data/Spotify_final_dataset.csv`) |
+| **Data points** | ~10 000 songs |
+| **Primary resource (CRUD)** | Song — id, title, artist, position, daysReleased, top10, peakPosition, peakPositionTimes, peakStreams, totalStreams |
+| **Secondary resource 1 (read-only)** | Artist — name, songs, numberOfSongs, totalStreams (aggregated from Song collection) |
+| **Secondary resource 2 (read-only)** | TopChart — position, song (top songs sorted by streams) |
 
+## Seed Script
+
+The seed script reads the CSV file and populates the MongoDB database.
+
+**Prerequisites:** a `.env` file with `MONGODB_URI` must exist.
+
+```bash
+node seed.js
+```
+
+The script deletes all existing songs and inserts fresh data from `data/Spotify_final_dataset.csv`. The CSV file is not included in the repository (listed in `.gitignore`) — download it from the Kaggle link above and place it in the `data/` folder.
 
 ## Design Decisions
 
 ### Authentication
 
-*Describe your JWT authentication solution. Why did you choose this approach? What alternatives exist, and what are their trade-offs?*
+JWT (JSON Web Tokens) with `bcryptjs` for password hashing. On register or login the API returns a signed token that the client includes as `Authorization: Bearer <token>` on write operations. The token is verified server-side on every request via a context function. Alternatives like sessions or API keys were considered but JWT fits stateless REST/GraphQL APIs better since no session state needs to be stored server-side.
 
 ### API Design
 
-**REST students:**
-- *How did you implement HATEOAS? How does it improve API discoverability?*
-- *How did you structure your resource URLs and use HTTP methods/status codes?*
+The API uses a single `/graphql` endpoint handled by Apollo Server v4.
 
-**GraphQL students:**
-- *How did you design your schema (types, queries, mutations)?*
-- *How did you implement nested queries? How does the single-endpoint approach affect your design?*
+**Schema overview:**
+- **Queries:** `songs`, `song`, `artists`, `artist`, `topChart`
+- **Mutations:** `register`, `login`, `addSong`, `updateSong`, `deleteSong`
+
+Nested queries are supported — querying an `artist` returns the artist's `songs` array inline, allowing clients to fetch related data in a single request rather than multiple round-trips.
+
+Pagination is implemented on `songs` and `artists` via `page` and `limit` arguments. The `songs` query returns a `SongsResult` type that includes `songs`, `totalCount`, `totalPages`, and `currentPage`.
 
 ### Error Handling
 
-*How does your API handle errors? Describe the format and consistency of your error responses.*
+All errors use `GraphQLError` with an `extensions.code` field (`UNAUTHENTICATED`, `NOT_FOUND`, `BAD_USER_INPUT`) so clients can handle error types programmatically. GraphQL always returns HTTP 200 — error details are in the `errors` array of the response body.
 
 ## Core Technologies Used
 
-*List the technologies you chose and briefly explain why:*
-
+| Technology | Reason |
+|---|---|
+| Apollo Server v4 | Industry-standard GraphQL server for Node.js |
+| MongoDB Atlas + Mongoose | Flexible document storage with schema validation |
+| JWT + bcryptjs | Stateless authentication with secure password hashing |
+| Newman | CLI runner for Postman collections in CI/CD |
+| Render | Free-tier hosting with automatic deploys from GitHub |
 
 ## Reflection
 
@@ -77,7 +90,7 @@ Choose a dataset (10000+ data points) that interests you — it should include a
 
 ## Acknowledgements
 
-*Resources, attributions, or shoutouts.*
+Dataset: [Spotify Top 10000 Streamed Songs](https://www.kaggle.com/datasets/rakkesharv/spotify-top-10000-streamed-songs) by rakkesharv on Kaggle.
 
 ## Requirements
 
@@ -87,37 +100,27 @@ See [all requirements in Issues](../../issues/). Close issues as you implement t
 
 | Requirement | Issue | Status |
 |---|---|---|
-| Data acquisition — choose and document a dataset (1000+ data points) | [#1](../../issues/1) | :white_large_square: |
-| Full CRUD for primary resource, read-only for secondary resources | [#2](../../issues/2) | :white_large_square: |
-| JWT authentication for write operations | [#3](../../issues/3) | :white_large_square: |
-| Error handling (400, 401, 404 with consistent format) | [#4](../../issues/4) | :white_large_square: |
-| Filtering and pagination for large result sets | [#17](../../issues/17) | :white_large_square: |
-
-### Functional Requirements — REST
-
-| Requirement | Issue | Status |
-|---|---|---|
-| RESTful endpoints with proper HTTP methods and status codes | [#12](../../issues/12) | :white_large_square: |
-| HATEOAS (hypermedia links in responses) | [#13](../../issues/13) | :white_large_square: |
+| Data acquisition — choose and document a dataset (1000+ data points) | [#1](../../issues/1) | :white_check_mark: |
+| Full CRUD for primary resource, read-only for secondary resources | [#2](../../issues/2) | :white_check_mark: |
+| JWT authentication for write operations | [#3](../../issues/3) | :white_check_mark: |
+| Error handling (400, 401, 404 with consistent format) | [#4](../../issues/4) | :white_check_mark: |
+| Filtering and pagination for large result sets | [#17](../../issues/17) | :white_check_mark: |
 
 ### Functional Requirements — GraphQL
 
 | Requirement | Issue | Status |
 |---|---|---|
-| Queries and mutations via single `/graphql` endpoint | [#14](../../issues/14) | :white_large_square: |
-| At least one nested query | [#15](../../issues/15) | :white_large_square: |
-| GraphQL Playground available | [#16](../../issues/16) | :white_large_square: |
+| Queries and mutations via single `/graphql` endpoint | [#14](../../issues/14) | :white_check_mark: |
+| At least one nested query | [#15](../../issues/15) | :white_check_mark: |
+| GraphQL Playground available | [#16](../../issues/16) | :white_check_mark: |
 
 ### Non-Functional Requirements
 
 | Requirement | Issue | Status |
 |---|---|---|
-| API documentation (Swagger/OpenAPI or Postman) | [#6](../../issues/6) | :white_large_square: |
-| Automated Postman tests (20+ test cases, success + failure) | [#7](../../issues/7) | :white_large_square: |
+| Automated Postman tests (20+ test cases, success + failure) | [#7](../../issues/7) | :white_check_mark: |
 | CI/CD pipeline running tests on every commit/MR | [#8](../../issues/8) | :white_large_square: |
-| Seed script for sample data | [#5](../../issues/5) | :white_large_square: |
-| Code quality (consistent standard, modular, documented) | [#10](../../issues/10) | :white_large_square: |
-| Deployed and publicly accessible | [#9](../../issues/9) | :white_large_square: |
+| Seed script for sample data | [#5](../../issues/5) | :white_check_mark: |
+| Code quality (consistent standard, modular, documented) | [#10](../../issues/10) | :white_check_mark: |
+| Deployed and publicly accessible | [#9](../../issues/9) | :white_check_mark: |
 | Peer review reflection submitted on merge request | [#11](../../issues/11) | :white_large_square: |
-
-
