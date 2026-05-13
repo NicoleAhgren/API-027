@@ -1,9 +1,20 @@
+image: node:20
+
 stages:
   - test
 
-run-tests:
+cache:
+  paths:
+    - node_modules/
+
+before_script:
+  - npm install
+
+newman_tests:
   stage: test
-  image: node:20
   script:
     - npm install -g newman
     - newman run spotify-graphql-api.postman_collection.json -e production.postman_environment.json
+  only:
+    - branches
+    - merge_requests
