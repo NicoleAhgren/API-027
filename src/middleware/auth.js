@@ -11,7 +11,7 @@ export const getUser = (req) => {
     } else {
       return null
     }
-} catch (err) {
+} catch {
     return null
   }
 }

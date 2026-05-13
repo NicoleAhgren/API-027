@@ -65,7 +65,7 @@ const resolvers = {
         return { name: artistData._id, songs: artistData.songs, numberOfSongs: artistData.numberOfSongs, totalStreams: artistData.totalStreams}
       },
 
-      topChart: async (__, { page = 1, limit = 20 }) => {
+      topChart: async (__, { limit = 20 }) => {
         const songs = await Song.find({ position: { $exists: true } }).sort({ position: 1 }).limit(limit)
         return songs.map(s => ({ position: s.position, song: s}))
       },
