@@ -1,5 +1,6 @@
 import gql from 'graphql-tag'
 
+// GraphQL type definitions for the music chart API
 const typeDefs = gql`
   type Song {
     id: ID!

@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 
+// Define the Song schema
 const songSchema = new mongoose.Schema({
   title: { type: String, required: true },
   artist: { type: String, required: true },

@@ -8,6 +8,7 @@ import Song from "./src/models/Song.js"
 
 dotenv.config()
 
+// Seed the MongoDB database with songs from the CSV file
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 

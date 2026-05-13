@@ -7,7 +7,7 @@ import typeDefs from './schema/typeDefs.js'
 import { getUser } from './middleware/auth.js'
 import resolvers from './resolvers/index.js'
 
-
+// Start the Apollo Server and connect to MongoDB
 async function start() {
   await mongoose.connect(process.env.MONGODB_URI)
   console.log('Connected to MongoDB')
