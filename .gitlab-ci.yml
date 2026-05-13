@@ -1,0 +1,9 @@
+stages:
+  - test
+
+run-tests:
+  stage: test
+  image: node:20
+  script:
+    - npm install -g newman
+    - newman run spotify-graphql-api.postman_collection.json -e production.postman_environment.json
