@@ -1,0 +1,1001 @@
+{
+  "info": {
+    "_postman_id": "e4f77fa4-ffca-4707-bb77-8b1c15368769",
+    "name": "spotify graphQL API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "40048370",
+    "_collection_link": "https://go.postman.co/collection/40048370-e4f77fa4-ffca-4707-bb77-8b1c15368769?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Register user - success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response has token\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.register.token).to.be.a('string');\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response has user\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.register.user.username).to.be.a('string');\r",
+              "});\r",
+              "\r",
+              "// Save token for later requests\r",
+              "const json = pm.response.json();\r",
+              "if (json.data && json.data.register) {\r",
+              "    pm.environment.set(\"token\", json.data.register.token);\r",
+              "    pm.environment.set(\"userId\", json.data.register.user.id);\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation {\r\n  register(username: \"duplicate_test_user\", password: \"Test1234!\") {\r\n    token\r\n    user {\r\n      id\r\n      username\r\n    }\r\n  }\r\n}",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Register user - fail",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns error for duplicate username\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.errors).to.be.an('array');\r",
+              "    pm.expect(json.errors[0].message).to.include(\"already exists\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation {\r\n  register(username: \"duplicate_test_user\", password: \"Test1234!\") {\r\n    token\r\n    user {\r\n      id\r\n      username\r\n    }\r\n  }\r\n}\r\n",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login - success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response has token\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.login.token).to.be.a('string');\r",
+              "});\r",
+              "\r",
+              "// Save token for authenticated requests\r",
+              "const json = pm.response.json();\r",
+              "if (json.data && json.data.login) {\r",
+              "    pm.environment.set(\"token\", json.data.login.token);\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation {\r\n  login(username: \"duplicate_test_user\", password: \"Test1234!\") {\r\n    token\r\n    user {\r\n      id\r\n      username\r\n    }\r\n  }\r\n}",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login - Fail",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns error for invalid credentials\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.errors).to.be.an('array');\r",
+              "    pm.expect(json.errors[0].message).to.include(\"Invalid\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation {\r\n  login(username: \"duplicate_test_user\", password: \"wrongpassword\") {\r\n    token\r\n    user {\r\n      id\r\n      username\r\n    }\r\n  }\r\n}",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get songs - success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns songs array\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.songs.songs).to.be.an('array');\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns pagination metadata\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.songs.totalCount).to.be.a('number');\r",
+              "    pm.expect(json.data.songs.totalPages).to.be.a('number');\r",
+              "    pm.expect(json.data.songs.currentPage).to.equal(1);\r",
+              "});\r",
+              "\r",
+              "// Save a song ID for later tests\r",
+              "const json = pm.response.json();\r",
+              "if (json.data.songs.songs.length > 0) {\r",
+              "    pm.environment.set(\"songId\", json.data.songs.songs[0].id);\r",
+              "}\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query {\r\n  songs(page: 1, limit: 5) {\r\n    songs {\r\n      id\r\n      title\r\n      artist\r\n    }\r\n    totalCount\r\n    totalPages\r\n    currentPage\r\n  }\r\n}\r\n",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get songs - Fail",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns error for non-existent song\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.errors).to.be.an('array');\r",
+              "    pm.expect(json.errors[0].extensions.code).to.equal(\"NOT_FOUND\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query {\r\n  song(id: \"000000000000000000000000\") {\r\n    id\r\n    title\r\n    artist\r\n  }\r\n}",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get single song - success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns correct song\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.song).to.not.be.null;\r",
+              "    pm.expect(json.data.song.id).to.equal(pm.environment.get(\"songId\"));\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query {\r\n  song(id: \"{{songId}}\") {\r\n    id\r\n    title\r\n    artist\r\n    totalStreams\r\n  }\r\n}",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add song - success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Song was created\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.addSong.title).to.equal(\"Test Song\");\r",
+              "    pm.expect(json.data.addSong.artist).to.equal(\"Test Artist\");\r",
+              "});\r",
+              "\r",
+              "// Save created song ID for update and delete tests\r",
+              "const json = pm.response.json();\r",
+              "if (json.data && json.data.addSong) {\r",
+              "    pm.environment.set(\"createdSongId\", json.data.addSong.id);\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation {\r\n  addSong(title: \"Test Song\", artist: \"Test Artist\") {\r\n    id\r\n    title\r\n    artist\r\n  }\r\n}",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add song - fail",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns error without authentication\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.errors).to.be.an('array');\r",
+              "    pm.expect(json.errors[0].extensions.code).to.equal(\"UNAUTHENTICATED\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation {\r\n  addSong(title: \"Test Song\", artist: \"Test Artist\") {\r\n    id\r\n    title\r\n    artist\r\n  }\r\n}\r\n",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update song - success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Song was updated\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.updateSong.title).to.equal(\"Updated Song Title\");\r",
+              "    pm.expect(json.data.updateSong.id).to.equal(pm.environment.get(\"createdSongId\"));\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation {\r\n  updateSong(id: \"{{createdSongId}}\", title: \"Updated Song Title\") {\r\n    id\r\n    title\r\n    artist\r\n  }\r\n}\r\n",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update song - Fail",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns error without authentication\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.errors).to.be.an('array');\r",
+              "    pm.expect(json.errors[0].extensions.code).to.equal(\"UNAUTHENTICATED\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation {\r\n  updateSong(id: \"{{createdSongId}}\", title: \"Updated Song Title\") {\r\n    id\r\n    title\r\n    artist\r\n  }\r\n}\r\n",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete song no token - Fail",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns error without authentication\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.errors).to.be.an('array');\r",
+              "    pm.expect(json.errors[0].extensions.code).to.equal(\"UNAUTHENTICATED\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation {\r\n  deleteSong(id: \"{{createdSongId}}\")\r\n}\r\n",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete song - success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Song was deleted\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.deleteSong).to.be.true;\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation {\r\n  deleteSong(id: \"{{createdSongId}}\")\r\n}\r\n",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete song id does not exist - Fail",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns error for non-existent song\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.errors).to.be.an('array');\r",
+              "    pm.expect(json.errors[0].extensions.code).to.equal(\"NOT_FOUND\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation {\r\n  deleteSong(id: \"000000000000000000000000\")\r\n}\r\n",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get artists - success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns artists array\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.artists).to.be.an('array');\r",
+              "    pm.expect(json.data.artists.length).to.be.above(0);\r",
+              "});\r",
+              "\r",
+              "// Save artist name for later\r",
+              "const json = pm.response.json();\r",
+              "if (json.data.artists.length > 0) {\r",
+              "    pm.environment.set(\"artistName\", json.data.artists[0].name);\r",
+              "}\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query {\r\n  artists(page: 1, limit: 5) {\r\n    name\r\n    numberOfSongs\r\n    totalStreams\r\n  }\r\n}\r\n",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get artist - success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns correct artist\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.artist.name).to.equal(pm.environment.get(\"artistName\"));\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Artist has nested songs\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.artist.songs).to.be.an('array');\r",
+              "    pm.expect(json.data.artist.songs.length).to.be.above(0);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query {\r\n  artist(name: \"{{artistName}}\") {\r\n    name\r\n    numberOfSongs\r\n    totalStreams\r\n    songs {\r\n      title\r\n      totalStreams\r\n    }\r\n  }\r\n}\r\n",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get artist  - Fail",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns error for non-existent artist\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.errors).to.be.an('array');\r",
+              "    pm.expect(json.errors[0].extensions.code).to.equal(\"NOT_FOUND\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query {\r\n  artist(name: \"NonExistentArtist12345\") {\r\n    name\r\n    numberOfSongs\r\n  }\r\n}\r\n",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get topchart - success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns chart entries\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.topChart).to.be.an('array');\r",
+              "    pm.expect(json.data.topChart.length).to.be.above(0);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Chart entries have position and song\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.topChart[0].position).to.be.a('number');\r",
+              "    pm.expect(json.data.topChart[0].song.title).to.be.a('string');\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query {\r\n  topChart(limit: 5) {\r\n    position\r\n    song {\r\n      title\r\n      artist\r\n    }\r\n  }\r\n}\r\n",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get songs with search - success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns filtered songs\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.songs.songs).to.be.an('array');\r",
+              "    pm.expect(json.data.songs.totalCount).to.be.above(0);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Search results contain Drake\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    const songs = json.data.songs.songs;\r",
+              "    const hasDrake = songs.some(s => s.artist.includes(\"Drake\") || s.title.includes(\"Drake\"));\r",
+              "    pm.expect(hasDrake).to.be.true;\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query {\r\n  songs(search: \"Drake\", limit: 5) {\r\n    songs {\r\n      title\r\n      artist\r\n    }\r\n    totalCount\r\n    currentPage\r\n  }\r\n}\r\n",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Search songs - no results",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns empty array for no results\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.songs.songs).to.be.an('array');\r",
+              "    pm.expect(json.data.songs.songs.length).to.equal(0);\r",
+              "    pm.expect(json.data.songs.totalCount).to.equal(0);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query {\r\n  songs(search: \"xyznonexistentsong12345\", limit: 5) {\r\n    songs {\r\n      title\r\n      artist\r\n    }\r\n    totalCount\r\n  }\r\n}\r\n",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get songs with pagination - success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns correct page\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.songs.currentPage).to.equal(2);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Returns 5 songs\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "    pm.expect(json.data.songs.songs.length).to.equal(5);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query {\r\n  songs(page: 2, limit: 5) {\r\n    songs {\r\n      title\r\n      artist\r\n    }\r\n    totalCount\r\n    currentPage\r\n    totalPages\r\n  }\r\n}\r\n\r\n",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "{{BaseUrl}}",
+          "host": [
+            "{{BaseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
