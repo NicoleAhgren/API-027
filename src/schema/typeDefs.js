@@ -36,8 +36,15 @@ const typeDefs = gql`
     user: User!
     }
 
+    type SongsResult {
+    songs: [Song!]!
+    totalCount: Int!
+    totalPages: Int!
+    currentPage: Int!
+    }
+
     type Query {
-    songs(page: Int, limit: Int, search: String): [Song!]!
+    songs(page: Int, limit: Int, search: String): SongsResult!
     song(id: ID!): Song
     artists(page: Int, limit: Int): [Artist!]!
     artist(name: String!): Artist

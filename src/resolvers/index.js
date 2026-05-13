@@ -15,9 +15,14 @@ const resolvers = {
             ],
           }
         : {}
-      return Song.find(query)
-        .skip((page - 1) * limit)
-        .limit(limit)
+        const totalCount = await Song.countDocuments(query)
+        const songs = await Song.find(query).skip((page - 1) * limit).limit(limit)
+        return {
+          songs,
+          totalCount,
+          totalPages: Math.ceil(totalCount / limit),
+          currentPage: page,
+        }
     },
     song: async (__, { id }) => {
       const song = await Song.findById(id)
